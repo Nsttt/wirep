@@ -6,14 +6,39 @@ version = "0.1.0"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-pingora = {version ="0.1", features = ["lb"]}
+# Required dependencies (bin and lib)
+anyhow = "1"
 async-trait = "0.1"
-log = "0.4.21"
-prometheus = "0.13.3"
-structopt = "0.3.26"
-pingora-core = "0.1.0"
-pingora-http = "0.1.0"
-pingora-proxy = "0.1.0"
-env_logger = "0.11.2"
+base64 = "0.22.0"
+boringtun = {version = "0.6.0", default-features = false}
+bytes = "1"
+futures = "0.3"
+log = "0.4"
+nom = "7"
+priority-queue = "2.0.2"
+rand = "0.8"
+smoltcp = {version = "0.11", default-features = false, features = [
+  "std",
+  "log",
+  "medium-ip",
+  "proto-ipv4",
+  "proto-ipv6",
+  "socket-udp",
+  "socket-tcp",
+]}
+tokio = {version = "1", features = ["rt", "sync", "io-util", "net", "time", "fs", "macros"]}
 
-[dev-dependencies]
+# forward boringtuns tracing events to log
+tracing = {version = "0.1", default-features = false, features = ["log"]}
+
+# bin-only dependencies
+async-recursion = "1.0"
+clap = {version = "4.5.1", default-features = false, features = ["suggestions", "std", "env", "help", "wrap_help"], optional = true}
+pretty_env_logger = {version = "0.5.0", optional = true}
+
+[features]
+bin = ["clap", "pretty_env_logger", "pcap", "tokio/rt-multi-thread"]
+default = ["bin"]
+pcap = []
+
+[lib]
