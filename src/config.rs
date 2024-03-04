@@ -1,3 +1,5 @@
+use base64::prelude::BASE64_STANDARD;
+use base64::Engine;
 use std::collections::HashSet;
 use std::convert::TryFrom;
 use std::fmt::{Display, Formatter};
@@ -302,7 +304,9 @@ fn parse_ip(s: Option<&String>) -> anyhow::Result<IpAddr> {
 }
 
 fn parse_private_key(s: &str) -> anyhow::Result<StaticSecret> {
-    let decoded = base64::decode(s).context("Failed to decode private key")?;
+    let decoded = BASE64_STANDARD
+        .decode(s)
+        .context("Failed to decode private key")?;
     if let Ok::<[u8; 32], _>(bytes) = decoded.try_into() {
         Ok(StaticSecret::from(bytes))
     } else {
@@ -312,7 +316,9 @@ fn parse_private_key(s: &str) -> anyhow::Result<StaticSecret> {
 
 fn parse_public_key(s: Option<&String>) -> anyhow::Result<PublicKey> {
     let encoded = s.context("Missing public key")?;
-    let decoded = base64::decode(encoded).context("Failed to decode public key")?;
+    let decoded = BASE64_STANDARD
+        .decode(encoded)
+        .context("Failed to decode public key")?;
     if let Ok::<[u8; 32], _>(bytes) = decoded.try_into() {
         Ok(PublicKey::from(bytes))
     } else {
@@ -322,7 +328,9 @@ fn parse_public_key(s: Option<&String>) -> anyhow::Result<PublicKey> {
 
 fn parse_preshared_key(s: Option<&String>) -> anyhow::Result<Option<[u8; 32]>> {
     if let Some(s) = s {
-        let decoded = base64::decode(s).context("Failed to decode preshared key")?;
+        let decoded = BASE64_STANDARD
+            .decode(s)
+            .context("Failed to decode preshared key")?;
         if let Ok::<[u8; 32], _>(bytes) = decoded.try_into() {
             Ok(Some(bytes))
         } else {
